@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects & Portfolio | Shaik Mohammad Asif</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-deep: #05050f;
+            --bg-dark: #0a0a1a;
+            --neon-pink: #ff2d95;
+            --neon-pink-dim: rgba(255, 45, 149, 0.12);
+            --neon-cyan: #00fff5;
+            --neon-cyan-dim: rgba(0, 255, 245, 0.10);
+            --neon-blue: #4d7cff;
+            --neon-blue-dim: rgba(77, 124, 255, 0.10);
+            --neon-magenta: #ff00ff;
+            --neon-yellow: #ffe600;
+            --glass-bg: rgba(255, 255, 255, 0.025);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-glow: rgba(255, 45, 149, 0.05);
+            --text-primary: #e0e6ff;
+            --text-secondary: rgba(224, 230, 255, 0.65);
+            --text-muted: rgba(224, 230, 255, 0.35);
+            --font-sans: 'Inter Tight', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Orbitron', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ── CYBERPUNK BACKGROUND ── */
+        .cyber-bg {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        #gridCanvas, #rainCanvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+            opacity: 0.4;
+        }
+        .neon-bloom {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+        }
+        .neon-bloom-1 {
+            width: 500px; height: 500px;
+            top: -100px; left: -100px;
+            background: radial-gradient(circle, var(--neon-pink) 0%, transparent 70%);
+            animation: bloomDrift1 20s ease-in-out infinite;
+        }
+        .neon-bloom-2 {
+            width: 400px; height: 400px;
+            bottom: -100px; right: -100px;
+            background: radial-gradient(circle, var(--neon-cyan) 0%, transparent 70%);
+            animation: bloomDrift2 18s ease-in-out infinite;
+        }
+        @keyframes bloomDrift1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(80px, 60px); }
+        }
+        @keyframes bloomDrift2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-60px, -80px); }
+        }
+
+        /* ── GLASS UTILITY ── */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+        .glass-glow {
+            box-shadow: 0 0 30px var(--glass-glow), inset 0 1px 0 rgba(255,255,255,0.06);
+        }
+        .glass-glow:hover {
+            border-color: rgba(0, 255, 245, 0.3);
+            box-shadow: 0 0 40px rgba(0, 255, 245, 0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+        .glass-glow-pink {
+            box-shadow: 0 0 30px rgba(255, 45, 149, 0.06);
+        }
+        .glass-glow-pink:hover {
+            border-color: rgba(255, 45, 149, 0.3);
+            box-shadow: 0 0 40px rgba(255, 45, 149, 0.12);
+        }
+
+        /* ── NAVBAR ── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            transition: all 0.4s ease;
+        }
+        nav.scrolled {
+            background: rgba(5, 5, 15, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 45, 149, 0.1);
+            padding: 0.8rem 5%;
+        }
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            letter-spacing: 3px;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px rgba(255, 45, 149, 0.5), 0 0 30px rgba(255, 45, 149, 0.2);
+        }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 1.5px;
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan));
+            box-shadow: 0 0 6px var(--neon-pink);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover { color: var(--neon-pink); text-shadow: 0 0 8px rgba(255, 45, 149, 0.4); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a.active { color: var(--text-primary); }
+        .nav-links a.active::after { width: 100%; }
+        .nav-cta {
+            padding: 0.55rem 1.3rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+            background: transparent;
+            color: var(--neon-cyan) !important;
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 8px rgba(0, 255, 245, 0.15), inset 0 0 8px rgba(0, 255, 245, 0.05);
+            transition: all 0.3s ease;
+        }
+        .nav-cta:hover {
+            background: rgba(0, 255, 245, 0.08);
+            box-shadow: 0 0 20px rgba(0, 255, 245, 0.3), inset 0 0 12px rgba(0, 255, 245, 0.1);
+            transform: translateY(-2px);
+        }
+        .nav-cta::after { display: none !important; }
+
+        .hamburger {
+            display: none;
+            background: none; border: none;
+            cursor: pointer; padding: 0.5rem; z-index: 1001;
+            flex-direction: column; gap: 5px;
+        }
+        .hamburger span {
+            display: block;
+            width: 24px; height: 2px;
+            background: var(--neon-pink);
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 0 4px rgba(255, 45, 149, 0.5);
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* ── SCROLL PROGRESS ── */
+        .scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+            width: 0%;
+            z-index: 1001;
+            transition: width 0.1s ease-out;
+        }
+
+        /* ── SECTIONS ── */
+        section { position: relative; z-index: 2; }
+        section[id] { scroll-margin-top: 80px; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--neon-cyan);
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-family: var(--font-sans);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        .section-title .gradient {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── PORTFOLIO ── */
+        .portfolio {
+            padding: 8rem 0;
+            position: relative;
+        }
+        .portfolio-sub {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            max-width: 650px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+        .portfolio-grid.single-col { grid-template-columns: 1fr; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .portfolio-card {
+            padding: 2rem;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .portfolio-card:hover {
+            border-color: rgba(0, 255, 245, 0.25);
+            box-shadow: 0 0 40px rgba(0, 255, 245, 0.08);
+            transform: translateY(-4px);
+        }
+        .portfolio-card-wide { grid-column: 1 / -1; }
+        .portfolio-card .card-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+        .portfolio-card h3 {
+            font-family: var(--font-sans);
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.3rem;
+        }
+        .portfolio-card h3 .gradient {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .portfolio-card .company-line {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--neon-pink);
+            margin-bottom: 0.75rem;
+        }
+        .portfolio-card p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .portfolio-card .achievement-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .portfolio-card .achievement-list li {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .portfolio-card .achievement-list li::before {
+            content: '\25B8';
+            position: absolute;
+            left: 0;
+            color: var(--neon-cyan);
+            font-weight: 700;
+        }
+        .portfolio-card .achievement-list li strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .client-logos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+        .client-logo {
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .client-logo:hover {
+            border-color: rgba(0, 255, 245, 0.3);
+            color: var(--neon-cyan);
+            transform: translateY(-2px);
+        }
+        .portfolio-card .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.8rem;
+        }
+        .portfolio-card .tag-list .tag {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: var(--text-muted);
+        }
+        .portfolio-card .cta-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--neon-cyan);
+            text-decoration: none;
+            margin-top: 0.75rem;
+            transition: gap 0.3s ease;
+        }
+        .portfolio-card .cta-link:hover { gap: 0.7rem; }
+        .portfolio-card .cta-link .arrow { font-size: 1rem; }
+        .portfolio-card .card-logo {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            margin-right: 0.75rem;
+            padding: 3px;
+            border-radius: 8px;
+            vertical-align: middle;
+            background-color: rgba(255,255,255,0.95);
+            background-clip: content-box;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .video-container {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+            max-width: 252px;
+            margin: 0 auto;
+        }
+        .video-container video {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .portfolio-closer {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        .portfolio-closer p {
+            font-size: 1.05rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--neon-cyan), #00d4a0);
+            color: var(--bg-deep);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0, 255, 245, 0.3); }
+        .page-intro {
+            padding: 8rem 0 4rem;
+            text-align: center;
+        }
+
+        /* ── FOOTER ── */
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 5%;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .footer-links { display: flex; gap: 2rem; }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover { color: var(--text-primary); }
+        .footer-copy {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── SCROLL REVEAL ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .portfolio-card-wide { grid-column: span 1; }
+            .footer-content { flex-direction: column; gap: 1.5rem; text-align: center; }
+            .portfolio { padding: 5rem 0; }
+            .page-intro { padding: 5rem 0 2rem; }
+            .web-grid { grid-template-columns: repeat(2, 1fr); }
+            .container { padding-left: 1.5rem; padding-right: 1.5rem; }
+        }
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .nav-links {
+                position: fixed;
+                top: 0; right: -100%;
+                width: 75%; max-width: 320px;
+                height: 100vh;
+                background: rgba(5, 5, 15, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                transition: right 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                display: flex !important;
+                z-index: 1000;
+                border-left: 1px solid rgba(255, 45, 149, 0.1);
+            }
+            .nav-links.open { right: 0; }
+            .nav-links a { font-size: 0.9rem; }
+            .web-grid { grid-template-columns: 1fr; }
+            .web-section { padding: 4rem 0 !important; }
+            .web-card.featured .featured-inner { flex-direction: column; text-align: center; }
+            .logo-track { gap: 1.5rem; }
+            .logo-track img { height: 36px; }
+            .logo-track img[style*="72px"] { height: 54px; }
+            .portfolio-card[style*="max-width:1200px"] { max-width: 100% !important; }
+            .card-logo { transform: scale(1) !important; width: 36px; height: 36px; }
+            .portfolio-card-wide { flex-direction: column !important; }
+            .portfolio-card-wide > div { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .portfolio-card { padding: 1.5rem; }
+            .web-grid { grid-template-columns: 1fr; }
+            .page-intro { padding: 6rem 0 2rem !important; }
+            .logo-track { gap: 1rem; }
+            .logo-track img { height: 28px; }
+            .logo-track img[style*="72px"] { height: 42px; }
+            .container { padding-left: 1rem; padding-right: 1rem; }
+            .portfolio-grid[style*="max-width:800px"] { max-width: 100% !important; }
+            .web-card.featured[style*="max-width:800px"] { max-width: 100% !important; }
+            .portfolio-card[style*="max-width:1200px"] { max-width: 100% !important; }
+            .web-card.featured .featured-inner { flex-direction: column; text-align: center; }
+        }
+
+        /* ── WEB PROJECTS ── */
+        .web-section { padding: 6rem 0; position: relative; overflow: hidden; }
+        .web-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .web-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 2rem 1.5rem; transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease; backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; text-align: center; min-height: 100px; min-width: 0; overflow: hidden; }
+        .web-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(0,255,245,0.15); transform: translateY(-4px); }
+        .web-card .card-label { font-family: var(--font-mono); font-size: 0.92rem; letter-spacing: 1px; margin: 0; font-weight: 500; }
+        .web-card .card-label a { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .web-card .web-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .web-card .web-header h3 { font-family: var(--font-sans); font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-primary); }
+        .web-card .web-header img { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,0.2); padding: 3px; }
+        .web-card p { font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary); margin: 0 0 0.75rem; }
+        .web-card .web-link { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; }
+        .web-card .web-link:hover { color: var(--neon-cyan); }
+        .web-card.featured { grid-column: 1 / -1; background: rgba(0,255,245,0.03); border-color: rgba(0,255,245,0.1); display: block; text-align: center; padding: 1.75rem; }
+        .web-card.featured:hover { border-color: rgba(0,255,245,0.25); }
+        .web-card.featured .featured-inner { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; }
+        .web-card.featured .featured-inner .featured-content { flex: 1; }
+        .web-card.featured .featured-inner .featured-logo img { width: 56px; height: 56px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.95); border: 1px solid rgba(255,255,255,0.2); padding: 4px; }
+        .web-card.featured .card-label { margin-bottom: 0.5rem; }
+        .web-card.featured h3 { font-family: var(--font-sans); font-size: 1.1rem; font-weight: 700; margin: 0 0 0.5rem; color: var(--text-primary); }
+        .web-card.featured p { font-size: 0.88rem; line-height: 1.7; color: var(--text-secondary); margin: 0; }
+        .web-card.featured .featured-link { font-family: var(--font-mono); font-size: 0.7rem; color: var(--neon-cyan); text-decoration: none; transition: color 0.3s ease; }
+        .web-card.featured .featured-link:hover { color: var(--neon-pink); }
+    </style>
+</head>
+<body>
+
+<div class="cyber-bg">
+    <canvas id="gridCanvas"></canvas>
+    <canvas id="rainCanvas"></canvas>
+    <div class="scanlines"></div>
+    <div class="neon-bloom neon-bloom-1"></div>
+    <div class="neon-bloom neon-bloom-2"></div>
+</div>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<nav id="navbar">
+    <a href="index.html" class="logo">// ASIF</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="portfolio.html">My Work</a>
+        <a href="index.html#contact" class="nav-cta">Let's Talk</a>
+    </div>
+</nav>
+
+<!-- ── PAGE INTRO ── -->
+<section class="page-intro">
+    <div class="container">
+        <div class="reveal" style="text-align:center;">
+            <p class="section-label">// my.work</p>
+            <h2 class="section-title">My <span class="gradient">Work</span></h2>
+            <p class="portfolio-sub" style="font-family:var(--font-mono);font-size:0.85rem;color:var(--neon-pink);letter-spacing:1px;margin-bottom:0.75rem;">Projects I've built, systems I've run, brands I've helped grow.</p>
+            <p class="portfolio-sub" style="max-width:900px;margin-bottom:0.75rem;">I've spent the last six years working across enterprise IT, smart homes and buildings, cloud infrastructure, web development, and digital marketing, leading the adoption of ITIL‑based ITSM practices—including incident, change, and problem management—to streamline operations and reduce service disruption.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── PORTFOLIO ── -->
+<section class="portfolio" id="portfolio">
+    <div class="container" style="max-width:1200px;">
+
+        <div class="reveal" style="margin-bottom:1.5rem;">
+            <p class="section-label" style="text-align:center !important;">&lt;featured.projects /&gt;</p>
+            <h3 style="text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:1.5rem;">Featured <span class="gradient">Projects</span></h3>
+        </div>
+        <div class="portfolio-grid">
+            <div class="portfolio-card portfolio-card-wide glass-glow reveal reveal-delay-1" style="display:flex;gap:2rem;align-items:stretch;">
+                <div style="flex:1;">
+                    <div class="card-label">Arak &bull; Riyadh</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">Riyadh Air — Smart Home Automation</h3><img src="assets/images/Logos/Riyadh Air.png" class="card-logo" style="margin:0 0 0 auto;transform:scale(2.366)" alt="Riyadh Air"></div>
+                    <div class="company-line">Smart Building &amp; Infrastructure</div>
+                    <p>Integrated smart‑building systems for Riyadh Air's facilities, covering enterprise‑grade WiFi, PoE switching, IP telephony, and structured cabling. I programmed KNX lighting controls, touch panels, and the smart control system that ties all automation layers together. This included configuring lighting scenes, automation logic, and system‑wide coordination for a seamless user experience. The deployment ensured reliable connectivity, centralized control, and a fully synchronized smart‑building environment aligned with enterprise standards.</p>
+                </div>
+                <div style="flex:1;display:flex;align-items:center;flex-direction:column;">
+                    <div class="video-container">
+                        <video controls playsinline>
+                            <source src="assets/video/Riyadh Air.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <a href="https://www.linkedin.com/posts/smdasif_knx-abb-homeautomation-ugcPost-7356647527942676480-vdry/?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFaybuEB36B9medmX7VUsK4ZWRawujmYA9c" target="_blank" style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color=''">View on LinkedIn &rarr;</a>
+                </div>
+            </div>
+            <div class="portfolio-card glass-glow reveal reveal-delay-2">
+                <div class="card-label">Prince Sultan University &bull; Riyadh</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">Campus-Wide Smart Automation</h3><img src="assets/images/Logos/Prince Sultan University..png" class="card-logo" style="margin:0 0 0 auto;transform:scale(1.872)" alt="Prince Sultan University"></div>
+                <div class="company-line">KNX &bull; LCS &bull; Sensor Integration</div>
+                <p>Deployed KNX lighting control, LCS integration, and environmental sensor networks across multiple campus buildings. Delivered centralised monitoring and energy optimisation at scale.</p>
+                </div>
+            <div class="portfolio-card glass-glow reveal reveal-delay-3">
+                <div class="card-label">State Bank of India &bull; Hyderabad</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">KYC Biometric Solution Rollout</h3><img src="assets/images/Logos/SBI.jpg" class="card-logo" style="margin:0 0 0 auto;transform:scale(1.584)" alt="SBI"></div>
+                <div class="company-line">Banking Infrastructure</div>
+                <p>Tested, implemented, and launched a KYC biometric solution across 42+ branches. Integrated fingerprint and iris scanning with core banking systems to meet regulatory compliance and reduce customer verification time by 60%.</p>
+            </div>
+            <div class="portfolio-card glass-glow reveal reveal-delay-4">
+                <div class="card-label">State Bank of India &bull; Hyderabad</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">Enterprise-to-Standard Server Migration</h3><img src="assets/images/Logos/SBI.jpg" class="card-logo" style="margin:0 0 0 auto;transform:scale(1.584)" alt="SBI"></div>
+                <div class="company-line">Cost Reduction &amp; Virtualisation</div>
+                <p>Migrated multiple branch servers from Microsoft Enterprise to Standard edition, consolidating legacy hardware onto standardised virtualised hosts. Cut hardware costs by 35% while improving fault tolerance and maintenance efficiency.</p>
+            </div>
+            <div class="portfolio-card glass-glow reveal reveal-delay-1">
+                <div class="card-label">State Bank of India &bull; Hyderabad</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">POS-to-Cloud Integration</h3><img src="assets/images/Logos/SBI.jpg" class="card-logo" style="margin:0 0 0 auto;transform:scale(1.584)" alt="SBI"></div>
+                <div class="company-line">Azure &bull; VMware &bull; Real-Time Sync</div>
+                <p>Integrated POS swiping machines with cloud infrastructure using Azure and VMware, enabling real-time transaction data synchronisation across 500+ retail endpoints with 99.95% uptime.</p>
+            </div>
+            <div class="portfolio-card glass-glow reveal reveal-delay-2">
+                <div class="card-label">State Bank of India &bull; Hyderabad</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">Regional Azure VMware Migration</h3><img src="assets/images/Logos/SBI.jpg" class="card-logo" style="margin:0 0 0 auto;transform:scale(1.584)" alt="SBI"></div>
+                <div class="company-line">Cloud Migration &bull; Project Lifecycle</div>
+                <p>Migrated regional local servers to Azure VMware and managed full VMware project lifecycles post-migration. Moved 40+ critical workloads with zero business downtime and reduced monthly infrastructure overhead by 28%.</p>
+            </div>
+            <div class="portfolio-card glass-glow reveal reveal-delay-3">
+                <div class="card-label">TSRTC &bull; Telangana</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">Dot-Matrix Printer Hardware Refresh</h3><img src="assets/images/Logos/TSRTC.jpg" class="card-logo" style="margin:0 0 0 auto;transform:scale(2.028)" alt="TSRTC"></div>
+                <div class="company-line">Enterprise Hardware Deployment</div>
+                <p>Replaced existing printers with dot-matrix units across 200+ bus depots. Handled installation, driver configuration, network testing, and end-user training to ensure uninterrupted ticketing operations.</p>
+            </div>
+            <div class="portfolio-card glass-glow reveal reveal-delay-4">
+                <div class="card-label">Union Bank of India</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;">Systems &amp; Software Upgrade</h3><img src="assets/images/Logos/Union Bank.jpg" class="card-logo" style="margin:0 0 0 auto;transform:scale(1.728)" alt="Union Bank"></div>
+                <div class="company-line">Banking Infrastructure</div>
+                <p>Executed a 2-month structured upgrade across multiple branches — OS upgrades, software patching, hardware diagnostics, and peripheral reconfiguration. Completed within a strict window with zero compliance breaches.</p>
+            </div>
+            <div class="portfolio-card portfolio-card-wide glass-glow reveal reveal-delay-1" style="max-width:1200px;margin:0 auto;">
+                <div style="display:flex;justify-content:center;align-items:center;margin-bottom:2rem;">
+                    <div style="display:flex;gap:0.5rem;">
+                        <img src="assets/images/Logos/Varun Motors.jpg" style="width:58px;height:58px;object-fit:contain;padding:3px;border-radius:10px;background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.2);" alt="Varun Motors">
+                        <img src="assets/images/Logos/Bajaj.png" style="width:58px;height:58px;object-fit:contain;padding:3px;border-radius:10px;background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.2);" alt="Bajaj">
+                        <img src="assets/images/Logos/KTM.png" style="width:58px;height:58px;object-fit:contain;padding:3px;border-radius:10px;background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.2);" alt="KTM">
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:0.5rem;max-width:750px;margin-left:auto;margin-right:auto;">
+                    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;border-radius:10px;background:rgba(0,255,245,0.05);border:1px solid rgba(0,255,245,0.1);">
+                        <span style="font-size:1.2rem;color:var(--neon-cyan);">&#9881;</span>
+                        <span style="font-size:0.88rem;color:var(--text-secondary);">ITIL/ITSM ticket resolution for Varun Motors — Bajaj &amp; KTM dealership group, Hyderabad</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;border-radius:10px;background:rgba(255,45,149,0.05);border:1px solid rgba(255,45,149,0.1);">
+                        <span style="font-size:1.2rem;color:var(--neon-pink);">&#128187;</span>
+                        <span style="font-size:0.88rem;color:var(--text-secondary);">Remote operations support across multiple client environments</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── WEB PROJECTS ── -->
+        <section class="web-section" id="web-projects" style="padding:3rem 0 4rem;margin-top:4.5rem;margin-bottom:2.5rem;">
+            <div class="container">
+                <div class="reveal" style="margin-bottom:1.5rem;">
+                    <p class="section-label" style="text-align:center !important;">&lt;websites.built /&gt;</p>
+                    <h3 style="text-align:center;font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">Websites <span class="gradient">Built</span></h3>
+                    <p style="text-align:center;font-size:0.9rem;color:var(--text-secondary);max-width:500px;margin:1rem auto 2.5rem;">Live sites I've designed and developed.</p>
+                </div>
+                <div class="web-grid">
+                    <div class="web-card glass-glow reveal reveal-delay-1">
+                        <div class="card-label"><a href="https://elegant-n.com" target="_blank" style="color:inherit;text-decoration:none;">elegant-n.com</a></div>
+                    </div>
+                    <div class="web-card glass-glow reveal reveal-delay-2">
+                        <div class="card-label"><a href="https://plazajallabiyath.com" target="_blank" style="color:inherit;text-decoration:none;">plazajallabiyath.com</a></div>
+                    </div>
+                    <div class="web-card glass-glow reveal reveal-delay-3">
+                        <div class="card-label"><a href="https://alzab.com" target="_blank" style="color:inherit;text-decoration:none;">alzab.com</a></div>
+                    </div>
+                    <div class="web-card glass-glow reveal reveal-delay-4">
+                        <div class="card-label"><a href="https://futuretense.me" target="_blank" style="color:inherit;text-decoration:none;">futuretense.me</a></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── BRAND CASE STUDY ── -->
+        <section class="web-section" id="brand-study" style="padding:0 0 3rem;margin-bottom:6rem;">
+            <div class="container">
+                <div class="web-card featured glass-glow reveal" style="padding:2rem;max-width:800px;margin:0 auto;">
+                    <div class="featured-inner" style="flex-direction:column;align-items:center;text-align:center;">
+                        <div class="card-label" style="margin-bottom:0.5rem;"><a href="https://plazajallabiyath.com" target="_blank" style="text-decoration:none;">plazajallabiyath.com</a></div>
+                        <div class="featured-logo" style="margin-bottom:1rem;">
+                            <img src="assets/images/Logos/Plaza.png" alt="Plaza Jallabiyath" style="width:87px;height:87px;">
+                        </div>
+                        <h3 style="font-family:var(--font-sans);font-size:1.1rem;font-weight:700;margin:0 0 0.5rem;color:var(--text-primary);">Plaza Jallabiyath — Full Brand Identity</h3>
+                        <p style="font-size:0.88rem;line-height:1.7;color:var(--text-secondary);margin:0;">Transformed Plaza Jallabiyath from a local store into a full brand — developing the logo, website, catalogs, promotional content, and WhatsApp Business setup for seamless customer engagement.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── IT OPERATIONS SUPPORT ── -->
+        <section class="web-section" id="it-support" style="padding:0 0 4rem;margin-top:2.5rem;">
+            <div class="container">
+                <div class="portfolio-card portfolio-card-wide glass-glow reveal" style="text-align:center;">
+                    <div class="card-label">IT Operations Support</div>
+                    <p style="font-size:0.9rem;line-height:1.7;color:var(--text-secondary);margin:0 0 1.5rem;">Providing ongoing IT operations support across multiple businesses — managing domains, hosting, email infrastructure, data backups, and general infrastructure maintenance. Keeping systems stable, secure, and running smoothly so clients can focus on their core operations without technical disruptions or downtime.</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:1.2rem;align-items:center;justify-content:center;padding:1rem 0;border-top:1px solid rgba(255,255,255,0.06);">
+                        <a href="https://clb-sa.com" target="_blank"><img src="assets/images/Logos/Clb.webp" style="width:90px;height:90px;object-fit:contain;border-radius:10px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:8px;backdrop-filter:blur(10px);transition:transform 0.3s,background 0.3s;" onmouseover="this.style.transform='scale(1.1)';this.style.background='rgba(5,5,15,1)'" onmouseout="this.style.transform='';this.style.background='rgba(5,5,15,0.9)'" alt="CLB"></a>
+                        <a href="https://alzab.com" target="_blank"><img src="assets/images/Logos/Alzab.png" style="width:90px;height:90px;object-fit:contain;border-radius:10px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:8px;backdrop-filter:blur(10px);transition:transform 0.3s,background 0.3s;" onmouseover="this.style.transform='scale(1.1)';this.style.background='rgba(5,5,15,1)'" onmouseout="this.style.transform='';this.style.background='rgba(5,5,15,0.9)'" alt="Alzab"></a>
+                        <a href="https://www.arak-sa.com" target="_blank"><img src="assets/images/Logos/Arak.webp" style="width:90px;height:90px;object-fit:contain;border-radius:10px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:8px;backdrop-filter:blur(10px);transition:transform 0.3s,background 0.3s;" onmouseover="this.style.transform='scale(1.1)';this.style.background='rgba(5,5,15,1)'" onmouseout="this.style.transform='';this.style.background='rgba(5,5,15,0.9)'" alt="Arak"></a>
+                        <a href="https://elegant-n.com" target="_blank"><img src="assets/images/Logos/Elegant-n.png" style="width:90px;height:90px;object-fit:contain;border-radius:10px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:8px;backdrop-filter:blur(10px);transition:transform 0.3s,background 0.3s;" onmouseover="this.style.transform='scale(1.1)';this.style.background='rgba(5,5,15,1)'" onmouseout="this.style.transform='';this.style.background='rgba(5,5,15,0.9)'" alt="Elegant-n"></a>
+                        <a href="https://ghusnsa.com" target="_blank"><img src="assets/images/Logos/Ghusn.png" style="width:90px;height:90px;object-fit:contain;border-radius:10px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:8px;backdrop-filter:blur(10px);transition:transform 0.3s,background 0.3s;" onmouseover="this.style.transform='scale(1.1)';this.style.background='rgba(5,5,15,1)'" onmouseout="this.style.transform='';this.style.background='rgba(5,5,15,0.9)'" alt="Ghusn"></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── AMC SUPPORT — AQEEQ ── -->
+        <div class="portfolio-card portfolio-card-wide glass-glow reveal" style="max-width:1200px;margin:0 auto 3rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="card-label" style="margin-bottom:0.5rem;">Aqeeq &bull; Riyadh</div>
+                <img src="assets/images/Logos/Aqeq.jpg" style="width:79px;height:79px;object-fit:contain;border-radius:10px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:6px;backdrop-filter:blur(10px);" alt="Aqeeq">
+            </div>
+            <h3 style="margin:0.25rem 0 0.3rem;">AMC Admin &amp; Data Support</h3>
+            <div class="company-line">Fresha &bull; WhatsApp Business</div>
+            <p>Provided ongoing AMC admin and data support for Aqeeq, a growing beauty and wellness brand — managing Fresha appointment scheduling, client records, and WhatsApp Business communication. Maintained data accuracy and platform continuity across the service stack, ensuring daily operations and customer bookings ran smoothly without disruption under the annual maintenance contract.</p>
+            <div class="tag-list">
+                <span class="tag">Fresha</span>
+                <span class="tag">WhatsApp Business</span>
+                <span class="tag">Data Management</span>
+                <span class="tag">AMC Support</span>
+            </div>
+        </div>
+
+        <!-- ── CLIENT LOGO SHOWCASE ── -->
+        <style>
+            .logo-track {
+                display: flex;
+                gap: 2.5rem;
+                width: max-content;
+                animation: scrollTrack 40s linear infinite;
+            }
+            .logo-track img {
+                height: 48px;
+                width: auto;
+                object-fit: contain;
+                flex-shrink: 0;
+                border-radius: 8px;
+                opacity: 0.7;
+                transition: opacity 0.3s;
+            }
+            .logo-track img:hover { opacity: 1; }
+            @keyframes scrollTrack {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
+            .logo-wall { overflow: hidden; overflow-x: clip; }
+        </style>
+        <div class="web-section" style="padding:4rem 0 5rem;">
+            <div class="container">
+                <div class="reveal" style="margin-bottom:2rem;text-align:center;">
+                    <p class="section-label" style="text-align:center !important;">&lt;clients.showcase /&gt;</p>
+                    <h3 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">Clients I've <span class="gradient">Worked With</span></h3>
+                    <p style="font-size:0.9rem;color:var(--text-secondary);max-width:550px;margin:0 auto;">Every logo represents a project or partnership I've been part of — from enterprise deployments to brand launches.</p>
+                </div>
+                <div class="logo-wall">
+                    <div class="logo-track">
+                        <img src="assets/images/Logos/Riyadh Air.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Riyadh Air">
+                        <img src="assets/images/Logos/Prince Sultan University..png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Prince Sultan University">
+                        <img src="assets/images/Logos/SBI.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="SBI">
+                        <img src="assets/images/Logos/TSRTC.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="TSRTC">
+                        <img src="assets/images/Logos/Union Bank.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Union Bank">
+                        <img src="assets/images/Logos/Arak.webp" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Arak">
+                        <img src="assets/images/Logos/Alzab.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Alzab">
+                        <img src="assets/images/Logos/Clb.webp" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="CLB">
+                        <img src="assets/images/Logos/Ghusn.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Ghusn">
+                        <img src="assets/images/Logos/Elegant-n.png" style="height:72px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Elegant-n">
+                        <img src="assets/images/Logos/Varun Motors.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Varun Motors">
+                        <img src="assets/images/Logos/Bajaj.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Bajaj">
+                        <img src="assets/images/Logos/KTM.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="KTM">
+
+                        <!-- duplicate for seamless loop -->
+                        <img src="assets/images/Logos/Riyadh Air.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Riyadh Air">
+                        <img src="assets/images/Logos/Prince Sultan University..png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Prince Sultan University">
+                        <img src="assets/images/Logos/SBI.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="SBI">
+                        <img src="assets/images/Logos/TSRTC.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="TSRTC">
+                        <img src="assets/images/Logos/Union Bank.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Union Bank">
+                        <img src="assets/images/Logos/Arak.webp" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Arak">
+                        <img src="assets/images/Logos/Alzab.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Alzab">
+                        <img src="assets/images/Logos/Clb.webp" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="CLB">
+                        <img src="assets/images/Logos/Ghusn.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Ghusn">
+                        <img src="assets/images/Logos/Elegant-n.png" style="height:72px;background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Elegant-n">
+                        <img src="assets/images/Logos/Varun Motors.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Varun Motors">
+                        <img src="assets/images/Logos/Bajaj.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Bajaj">
+                        <img src="assets/images/Logos/KTM.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="KTM">
+                        <img src="assets/images/Logos/Plaza.png" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Plaza Jallabiyath">
+                        <img src="assets/images/Logos/Aqeq.jpg" style="background:rgba(5,5,15,0.9);border:1px solid rgba(255,255,255,0.1);padding:4px;border-radius:8px;backdrop-filter:blur(6px);" alt="Aqeeq">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── MARKETING CAMPAIGNS ── -->
+        <div class="web-section" style="padding:2rem 0 4rem;">
+            <div class="container">
+                <div class="reveal" style="margin-bottom:2rem;text-align:center;">
+                    <p class="section-label" style="text-align:center !important;">&lt;marketing.campaigns /&gt;</p>
+                    <h3 style="font-size:1.5rem;font-weight:700;margin-bottom:0.5rem;">Marketing <span style="background:linear-gradient(135deg,#00fff5,#ff2d95);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Campaigns</span></h3>
+                    <p style="font-size:0.9rem;color:var(--text-secondary);max-width:550px;margin:0 auto;">Planned and executed digital marketing campaigns across Meta, TikTok, and email — managing ad creatives, audience targeting, and performance tracking from end to end.</p>
+                </div>
+                <div class="portfolio-grid" style="grid-template-columns:repeat(2,1fr);margin:0 auto;max-width:800px;">
+                    <div class="portfolio-card glass-glow reveal">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+                            <h3 style="margin:0;font-size:1.2rem;">Meta Ads</h3>
+                        </div>
+                        <div class="company-line" style="margin-bottom:0.5rem;">Alokheyatah &bull; Wonder Riyadh</div>
+                        <p style="margin:0;font-size:0.85rem;">Managed Meta ad campaigns across Facebook and Instagram — driving engagement through targeted creatives and audience segmentation.</p>
+                    </div>
+                    <div class="portfolio-card glass-glow reveal">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+                            <h3 style="margin:0;font-size:1.2rem;">TikTok Ads</h3>
+                        </div>
+                        <div class="company-line" style="margin-bottom:0.5rem;">Alokheyatah</div>
+                        <p style="margin:0;font-size:0.85rem;">Created and managed TikTok ad campaigns — leveraging short-form video content for brand awareness and audience reach.</p>
+                    </div>
+                    <div class="portfolio-card glass-glow reveal">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+                            <h3 style="margin:0;font-size:1.2rem;">Email Marketing</h3>
+                        </div>
+                        <div class="company-line" style="margin-bottom:0.5rem;">Alzab</div>
+                        <p style="margin:0;font-size:0.85rem;">Designed and deployed email marketing sequences — from audience list building to A/B tested content and performance reporting.</p>
+                    </div>
+                    <div class="portfolio-card glass-glow reveal">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+                            <h3 style="margin:0;font-size:1.2rem;">Lookalike Campaigns</h3>
+                        </div>
+                        <div class="company-line" style="margin-bottom:0.5rem;">Aqeeq</div>
+                        <p style="margin:0;font-size:0.85rem;">Built lookalike audience campaigns to expand reach and acquire new customers based on existing high-value segments.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Closing CTA -->
+        <div class="portfolio-closer reveal">
+            <h2 class="section-title" style="margin-bottom:1rem;">Let's work together and build something remarkable.</h2>
+            <a href="index.html#contact" class="btn-primary">Start a Conversation &rarr;</a>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-logo">// SHAIK MOHAMMAD ASIF</div>
+        <div class="footer-links">
+            <a href="index.html#about">About</a>
+            <a href="index.html#experience">Experience</a>
+            <a href="portfolio.html">My Work</a>
+            <a href="index.html#contact">Let's Talk</a>
+        </div>
+        <div class="footer-copy">&copy; 2026 Shaik Mohammad Asif. All rights reserved.</div>
+    </div>
+</footer>
+
+<script>
+// ── NAVBAR SOLIDIFY ON SCROLL ──
+(function() {
+    var nav = document.getElementById('navbar');
+    var progress = document.getElementById('scrollProgress');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) { nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); }
+        var scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var scrolled = (window.scrollY / scrollHeight) * 100;
+        progress.style.width = scrolled + '%';
+    });
+})();
+
+// ── HAMBURGER ──
+(function() {
+    var hamburger = document.getElementById('hamburger');
+    var navLinks = document.getElementById('navLinks');
+    if (!hamburger || !navLinks) return;
+    hamburger.addEventListener('click', function() {
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('open');
+    });
+    navLinks.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+            hamburger.classList.remove('active');
+            navLinks.classList.remove('open');
+        });
+    });
+})();
+
+// ── SCROLL REVEAL (IntersectionObserver) ──
+(function() {
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+})();
+
+// ── CYBERPUNK GRID CANVAS ──
+(function() {
+    var canvas = document.getElementById('gridCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var animId;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var gridSize = 60;
+    var offset = 0;
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = 'rgba(0, 255, 245, 0.04)';
+        ctx.lineWidth = 0.5;
+
+        for (var x = 0; x <= canvas.width; x += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        }
+        for (var y = 0; y <= canvas.height; y += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+
+        offset += 0.15;
+        if (offset >= gridSize) offset = 0;
+
+        ctx.strokeStyle = 'rgba(255, 45, 149, 0.02)';
+        ctx.lineWidth = 0.3;
+        for (var x2 = -gridSize + offset; x2 <= canvas.width + gridSize; x2 += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(x2, 0);
+            ctx.lineTo(x2, canvas.height);
+            ctx.stroke();
+        }
+        for (var y2 = -gridSize + offset; y2 <= canvas.height + gridSize; y2 += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, y2);
+            ctx.lineTo(canvas.width, y2);
+            ctx.stroke();
+        }
+
+        animId = requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+// ── CYBERPUNK RAIN CANVAS ──
+(function() {
+    var canvas = document.getElementById('rainCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var columns = [];
+    var fontSize = 14;
+    var animId;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var colCount = Math.floor(canvas.width / fontSize);
+        columns = [];
+        for (var i = 0; i < colCount; i++) {
+            columns.push(Math.random() * canvas.height / fontSize);
+        }
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+
+    function draw() {
+        ctx.fillStyle = 'rgba(5, 5, 15, 0.06)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (var i = 0; i < columns.length; i++) {
+            var char = chars[Math.floor(Math.random() * chars.length)];
+            var x = i * fontSize;
+            var y = columns[i] * fontSize;
+
+            if (Math.random() > 0.5) {
+                ctx.fillStyle = 'rgba(0, 255, 245, 0.12)';
+            } else {
+                ctx.fillStyle = 'rgba(255, 45, 149, 0.08)';
+            }
+            ctx.font = fontSize + 'px monospace';
+            ctx.fillText(char, x, y);
+
+            if (y > canvas.height && Math.random() > 0.975) {
+                columns[i] = 0;
+            }
+            columns[i]++;
+        }
+
+        animId = requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+// ── SMOOTH PAGE LOAD ──
+document.body.style.opacity = '0';
+document.body.style.transition = 'opacity 0.6s ease';
+window.addEventListener('load', function() { document.body.style.opacity = '1'; });
+</script>
+</body>
+</html>
