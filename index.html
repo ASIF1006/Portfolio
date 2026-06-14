@@ -1264,7 +1264,7 @@
         </div>
     </div>
     <div class="hero-image">
-        <img src="assets/images/Photo.jpg" alt="Shaik Mohammad Asif">
+        <img src="assets/images/Photo.jpg" alt="Shaik Mohammad Asif" loading="eager" fetchpriority="high">
         <div class="glass-overlay"></div>
     </div>
 </section>
@@ -1279,7 +1279,7 @@
                 <p class="about-text" style="margin-right:-10%;">I'm a results-driven IT professional with over six years of experience spanning system administration, network engineering, end-user support, and enterprise infrastructure management across multi-branch operations. My work has taken me from hands-on technical support to leading full infrastructure deployments — including networking, server environments, security systems, and smart automation. CCNA-certified and based in Riyadh with a transferable Iqama, I'm ready to bring reliability and structure to your IT operations from day one.</p>
             </div>
             <div class="about-video-wrap">
-                <video id="aboutVideo" autoplay muted playsinline loop>
+                <video id="aboutVideo" autoplay muted playsinline loop preload="none">
                     <source src="assets/video/Video.mp4" type="video/mp4">
                 </video>
                 <div class="about-glass-card glass-glow-cyan">
@@ -1469,32 +1469,32 @@
         </div>
         <div class="growth-grid">
             <div class="growth-image reveal reveal-delay-2">
-                <img src="assets/images/growth-section.png" alt="Professional Growth">
+                <img src="assets/images/growth-section.png" alt="Professional Growth" loading="lazy">
             </div>
             <div class="growth-content">
                 <div class="growth-list">
                     <a href="assets/images/certs/AI tool workshop (Be10X).pdf" target="_blank" class="growth-item reveal reveal-delay-1">
-                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-be10x.jpg" alt="be10x Certificate"></div>
+                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-be10x.jpg" alt="be10x Certificate" loading="lazy"></div>
                         <div class="growth-item-info"><h5>AI Tools & GPT Workshop</h5><p>be10x</p></div>
                     </a>
                     <a href="assets/images/certs/AI tools mastery (Clapingo).pdf" target="_blank" class="growth-item reveal reveal-delay-2">
-                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-clapingo.png" alt="Clapingo Certificate"></div>
+                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-clapingo.png" alt="Clapingo Certificate" loading="lazy"></div>
                         <div class="growth-item-info"><h5>AI Tools Mastery Workshop</h5><p>Clapingo</p></div>
                     </a>
                     <a href="assets/images/certs/Data Analytics using Power BI (Techtip24).pdf" target="_blank" class="growth-item reveal reveal-delay-3">
-                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-techtip24.jpg" alt="Techtip24 Certificate"></div>
+                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-techtip24.jpg" alt="Techtip24 Certificate" loading="lazy"></div>
                         <div class="growth-item-info"><h5>Data Analytics Using Power BI</h5><p>Techtip24</p></div>
                     </a>
                     <a href="assets/images/certs/Mohammad_Asif_Outskill.pdf" target="_blank" class="growth-item reveal reveal-delay-4">
-                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-outskill.jpg" alt="Outskill Certificate"></div>
+                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-outskill.jpg" alt="Outskill Certificate" loading="lazy"></div>
                         <div class="growth-item-info"><h5>Generative AI Mastery</h5><p>Outskill</p></div>
                     </a>
                     <a href="assets/images/certs/AI Event participation Certificate (Aigenxt).pdf" target="_blank" class="growth-item reveal reveal-delay-5">
-                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-aigenxt.png" alt="Aigenxt Certificate"></div>
+                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-aigenxt.png" alt="Aigenxt Certificate" loading="lazy"></div>
                         <div class="growth-item-info"><h5>Aigenxt Event</h5><p>Aigenxt</p></div>
                     </a>
                     <a href="assets/images/certs/DMG_Certificate_MOHAMMAD ASIF SHAIK.pdf" target="_blank" class="growth-item reveal">
-                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-dmg.jpg" alt="DMG Certificate"></div>
+                        <div class="growth-item-thumb"><img src="assets/images/certs/cert-dmg.jpg" alt="DMG Certificate" loading="lazy"></div>
                         <div class="growth-item-info"><h5>AI &amp; Google Tools In Education</h5><p>DMG</p></div>
                     </a>
                 </div>
@@ -1945,9 +1945,17 @@
 })();
 
 // ── PAGE LOAD ──
-document.body.style.opacity = '0';
-document.body.style.transition = 'opacity 0.6s ease';
-window.addEventListener('load', function() { document.body.style.opacity = '1'; });
+// Content visible immediately — no wait for slow resources (fonts, Three.js, videos)
+// Showing content on DOMContentReady instead of window.load for much faster perceived load
+if (document.readyState === 'loading') {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.3s ease';
+    document.addEventListener('DOMContentLoaded', function() {
+        requestAnimationFrame(function() { document.body.style.opacity = '1'; });
+    });
+} else {
+    document.body.style.opacity = '1';
+}
 </script>
 
 <!-- ── CYBER CONTROLS TOGGLE ── -->
